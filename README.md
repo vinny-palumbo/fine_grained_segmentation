@@ -2,8 +2,6 @@
 
 This is a project for fine-grained segmentation on clothing items in images, implemented in Python 3, Keras and TensorFlow. A deep learning model generates bounding boxes and segmentation masks for each instance of an object in the image. It's based on [Matterport Mask R-CNN](https://github.com/matterport/Mask_RCNN)
 
-![Fine-Grained Segmentation Sample](assets/sample.png)
-
 ## Requirements
 
 Python 3.5, TensorFlow 1.3, Keras 2.0.8 and other common packages listed in `requirements.txt`.

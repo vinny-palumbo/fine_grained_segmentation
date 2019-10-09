@@ -12,15 +12,25 @@ try:
 except ImportError:
     from distutils.core import setup
 
+try: # for pip >= 10
+    from pip._internal.req import parse_requirements
+except ImportError: # for pip <= 9.0.3
+    from pip.req import parse_requirements
+    
+try:
+    from pip._internal import download
+except ImportError:
+    from pip import download
+
 
 def _parse_requirements(file_path):
     pip_ver = pkg_resources.get_distribution('pip').version
     pip_version = list(map(int, pip_ver.split('.')[:2]))
     if pip_version >= [6, 0]:
-        raw = pip.req.parse_requirements(file_path,
-                                         session=pip.download.PipSession())
+        raw = parse_requirements(file_path,
+                                         session=download.PipSession())
     else:
-        raw = pip.req.parse_requirements(file_path)
+        raw = parse_requirements(file_path)
     return [str(i.req) for i in raw]
 
 

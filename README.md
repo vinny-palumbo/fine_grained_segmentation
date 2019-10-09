@@ -9,7 +9,11 @@ Python 3.5, TensorFlow 1.3, Keras 2.0.8 and other common packages listed in `req
 ## Installation
 
 1. Clone this repository
-2. Install dependencies
+2. Run setup to install the library
+   ```bash
+   python3 setup.py install
+   ```
+   If it failed to install the dependencies, run
    ```bash
    pip3 install -r requirements.txt
    ```

@@ -26,7 +26,7 @@ ROOT_DIR = os.path.abspath("./")
 MODEL_DIR = os.path.join(ROOT_DIR, "logs")
 
 # Path to trained weights file
-COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
+COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_fashion_0000.h5")
 
 
 class CocoConfig(Config):
@@ -35,7 +35,7 @@ class CocoConfig(Config):
     to the COCO dataset.
     """
     # Give the configuration a recognizable name
-    NAME = "coco"
+    NAME = "fashion"
 
     # We use a GPU with 12GB memory, which can fit two images.
     # Adjust down if you use a smaller GPU.
@@ -45,7 +45,7 @@ class CocoConfig(Config):
     # GPU_COUNT = 8
 
     # Number of classes (including background)
-    NUM_CLASSES = 1 + 80  # COCO has 80 classes
+    NUM_CLASSES = 1 + 46  # fashion has 46 classes
 
 
 class InferenceConfig(CocoConfig):
@@ -676,21 +676,15 @@ set_converter(BatchNorm, convert_BatchNorm)
 
 
 # Run detection
-class_names = ['BG', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
-               'bus', 'train', 'truck', 'boat', 'traffic light',
-               'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird',
-               'cat', 'dog', 'horse', 'sheep', 'cow', 'elephant', 'bear',
-               'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie',
-               'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball',
-               'kite', 'baseball bat', 'baseball glove', 'skateboard',
-               'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup',
-               'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple',
-               'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza',
-               'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed',
-               'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote',
-               'keyboard', 'cell phone', 'microwave', 'oven', 'toaster',
-               'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors',
-               'teddy bear', 'hair drier', 'toothbrush']
+class_names = ['BG', 'shirt, blouse', 'top, t-shirt, sweatshirt', 'sweater', 
+                'cardigan', 'jacket', 'vest', 'pants', 'shorts', 'skirt', 'coat', 
+                'dress', 'jumpsuit', 'cape', 'glasses', 'hat', 
+                'headband, head covering, hair accessory', 'tie', 'glove', 'watch', 
+                'belt', 'leg warmer', 'tights, stockings', 'sock', 'shoe', 
+                'bag, wallet', 'scarf', 'umbrella', 'hood', 'collar', 'lapel', 
+                'epaulette', 'sleeve', 'pocket', 'neckline', 'buckle', 'zipper', 
+                'applique', 'bead', 'bow', 'flower', 'fringe', 'ribbon', 'rivet', 
+                'ruffle', 'sequin', 'tassel']
 
 
 def generate_image(images, molded_images, windows, results):

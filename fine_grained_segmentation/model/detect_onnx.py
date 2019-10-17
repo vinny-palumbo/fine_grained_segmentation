@@ -1,4 +1,3 @@
-import os
 import sys
 import numpy as np
 import skimage
@@ -7,42 +6,7 @@ from mrcnn.config import Config
 from mrcnn import model as modellib
 from mrcnn import visualize
 
-from os.path import dirname, abspath
-
-
-class CocoConfig(Config):
-    """Configuration for training on MS COCO.
-    Derives from the base Config class and overrides values specific
-    to the COCO dataset.
-    """
-    # Give the configuration a recognizable name
-    NAME = "fashion"
-
-    # We use a GPU with 12GB memory, which can fit two images.
-    # Adjust down if you use a smaller GPU.
-    IMAGES_PER_GPU = 2
-
-    # Uncomment to train on 8 GPUs (default is 1)
-    # GPU_COUNT = 8
-
-    # Number of classes (including background)
-    NUM_CLASSES = 1 + 46  # fashion has 46 classes
-
-
-class InferenceConfig(CocoConfig):
-    # Set batch size to 1 since we'll be running inference on
-    # one image at a time. Batch size = GPU_COUNT * IMAGES_PER_GPU
-    GPU_COUNT = 1
-    IMAGES_PER_GPU = 1
-
-
-config = InferenceConfig()
-config.display()
-
-model = modellib.MaskRCNN(mode="inference", model_dir="logs", config=config)
-
-
-# Run detection
+# list of fashion class names
 class_names = ['BG', 'shirt, blouse', 'top, t-shirt, sweatshirt', 'sweater', 
                 'cardigan', 'jacket', 'vest', 'pants', 'shorts', 'skirt', 'coat', 
                 'dress', 'jumpsuit', 'cape', 'glasses', 'hat', 
@@ -52,6 +16,20 @@ class_names = ['BG', 'shirt, blouse', 'top, t-shirt, sweatshirt', 'sweater',
                 'epaulette', 'sleeve', 'pocket', 'neckline', 'buckle', 'zipper', 
                 'applique', 'bead', 'bow', 'flower', 'fringe', 'ribbon', 'rivet', 
                 'ruffle', 'sequin', 'tassel']
+
+
+class InferenceConfig(Config):
+    # Set batch size to 1 since we'll be running inference on
+    # one image at a time. Batch size = GPU_COUNT * IMAGES_PER_GPU
+    
+    # Give the configuration a recognizable name
+    NAME = "fashion"
+
+    # Number of classes (including background)
+    NUM_CLASSES = 1 + 46  # fashion has 46 classes
+    
+    GPU_COUNT = 1
+    IMAGES_PER_GPU = 1
 
 
 def generate_image(images, molded_images, windows, results):
@@ -79,6 +57,13 @@ if __name__ == '__main__':
         exit(-1)
 
     model_file_name = './mrcnn.onnx'
+    
+    # create config
+    config = InferenceConfig()
+    config.display()
+    
+    # create model
+    model = modellib.MaskRCNN(mode="inference", model_dir="logs", config=config)
     
     # run with ONNXRuntime
     import onnxruntime

@@ -51,12 +51,42 @@ def generate_image(images, molded_images, windows, results):
     return results_final
 
 
-if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print("Need an image file for object detection.")
-        exit(-1)
+def detect(sess, model, filename):
+        
+        # get image
+        image = skimage.io.imread(filename)
+        images = [image]
+        
+        # preprocessing
+        molded_images, image_metas, windows = model.mold_inputs(images)
+        anchors = model.get_anchors(molded_images[0].shape)
+        anchors = np.broadcast_to(anchors, (model.config.BATCH_SIZE,) + anchors.shape)
 
-    model_file_name = './mrcnn.onnx'
+        results = \
+            sess.run(None, {"input_image": molded_images.astype(np.float32),
+                            "input_anchors": anchors,
+                            "input_image_meta": image_metas.astype(np.float32)})
+
+        # postprocessing
+        results_final = generate_image(images, molded_images, windows, results)
+        
+        
+if __name__ == '__main__':
+    
+    import argparse
+
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(
+        description='Detect and segment fashion items in images.')
+    parser.add_argument('--image', required=True,
+                        metavar="path to image",
+                        help='Image to detect fashion items on')
+
+    args = parser.parse_args()
+
+    # Validate arguments
+    assert args.image, "Provide --image to detect fashion items"
+    print("Image: ", args.image)
     
     # create config
     config = InferenceConfig()
@@ -67,21 +97,9 @@ if __name__ == '__main__':
     
     # run with ONNXRuntime
     import onnxruntime
-    filename = sys.argv[1]
-    image = skimage.io.imread(filename)
-    images = [image]
-
+    model_file_name = './mrcnn.onnx'
     sess = onnxruntime.InferenceSession(model_file_name)
-
-    # preprocessing
-    molded_images, image_metas, windows = model.mold_inputs(images)
-    anchors = model.get_anchors(molded_images[0].shape)
-    anchors = np.broadcast_to(anchors, (model.config.BATCH_SIZE,) + anchors.shape)
-
-    results = \
-        sess.run(None, {"input_image": molded_images.astype(np.float32),
-                        "input_anchors": anchors,
-                        "input_image_meta": image_metas.astype(np.float32)})
-
-    # postprocessing
-    results_final = generate_image(images, molded_images, windows, results)
+    detect(sess, model, args.image)
+    
+    
+    

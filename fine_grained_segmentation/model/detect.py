@@ -2,9 +2,9 @@ import sys
 import numpy as np
 import skimage
 
-from mrcnn.config import Config
-from mrcnn import model as modellib
-from mrcnn import visualize
+from config import Config
+import model as modellib
+import visualize
 
 # list of fashion class names
 class_names = ['BG', 'shirt, blouse', 'top, t-shirt, sweatshirt', 'sweater', 

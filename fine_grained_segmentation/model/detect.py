@@ -90,7 +90,6 @@ if __name__ == '__main__':
     
     # create config
     config = InferenceConfig()
-    config.display()
     
     # create model
     model = modellib.MaskRCNN(mode="inference", model_dir="logs", config=config)

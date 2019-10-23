@@ -2,9 +2,9 @@ import sys
 import numpy as np
 import skimage
 
-from config import Config
-import model as modellib
-import visualize
+from tools.config import Config
+from tools import model as modellib
+from tools import visualize
 
 # list of fashion class names
 class_names = ['BG', 'shirt, blouse', 'top, t-shirt, sweatshirt', 'sweater', 

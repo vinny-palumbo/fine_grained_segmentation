@@ -13,26 +13,6 @@ import numpy as np
 from tools import utils
 
 
-############################################################
-#  Utility Functions
-############################################################
-
-def compute_backbone_shapes(config, image_shape):
-    """Computes the width and height of each stage of the backbone network.
-
-    Returns:
-        [N, (height, width)]. Where N is the number of stages
-    """
-    if callable(config.BACKBONE):
-        return config.COMPUTE_BACKBONE_SHAPE(image_shape)
-
-    # Currently supports ResNet only
-    assert config.BACKBONE in ["resnet50", "resnet101"]
-    return np.array(
-        [[int(math.ceil(image_shape[0] / stride)),
-            int(math.ceil(image_shape[1] / stride))]
-            for stride in config.BACKBONE_STRIDES])
-
 
 ############################################################
 #  MaskRCNN Class
@@ -44,15 +24,13 @@ class MaskRCNN():
     The actual Keras model is in the keras_model property.
     """
 
-    def __init__(self, mode, config, model_dir):
+    def __init__(self, mode, model_dir):
         """
         mode: Either "training" or "inference"
-        config: A Sub-class of the Config class
         model_dir: Directory to save training logs and trained weights
         """
         assert mode in ['training', 'inference']
         self.mode = mode
-        self.config = config
         self.model_dir = model_dir
         
 
@@ -68,23 +46,19 @@ class MaskRCNN():
         windows: [N, (y1, x1, y2, x2)]. The portion of the image that has the
             original image (padding excluded).
         """
+        NUM_CLASSES = 47
         molded_images = []
         image_metas = []
         windows = []
         for image in images:
             # Resize image
             # TODO: move resizing to mold_image()
-            molded_image, window, scale, padding, crop = utils.resize_image(
-                image,
-                min_dim=self.config.IMAGE_MIN_DIM,
-                min_scale=self.config.IMAGE_MIN_SCALE,
-                max_dim=self.config.IMAGE_MAX_DIM,
-                mode=self.config.IMAGE_RESIZE_MODE)
-            molded_image = mold_image(molded_image, self.config)
+            molded_image, window, scale, padding, crop = utils.resize_image(image)
+            molded_image = mold_image(molded_image)
             # Build image_meta
             image_meta = compose_image_meta(
                 0, image.shape, molded_image.shape, window, scale,
-                np.zeros([self.config.NUM_CLASSES], dtype=np.int32))
+                np.zeros([NUM_CLASSES], dtype=np.int32))
             # Append
             molded_images.append(molded_image)
             windows.append(window)
@@ -164,18 +138,25 @@ class MaskRCNN():
         
     def get_anchors(self, image_shape):
         """Returns anchor pyramid for the given image size."""
-        backbone_shapes = compute_backbone_shapes(self.config, image_shape)
+        BACKBONE_STRIDES = [4, 8, 16, 32, 64]
+        RPN_ANCHOR_SCALES = (32, 64, 128, 256, 512)
+        RPN_ANCHOR_RATIOS = [0.5, 1, 2]
+        RPN_ANCHOR_STRIDE = 1
+        
+        backbone_shapes = np.array([[int(math.ceil(image_shape[0] / stride)),
+                                     int(math.ceil(image_shape[1] / stride))]
+                                     for stride in BACKBONE_STRIDES])
         # Cache anchors and reuse if image shape is the same
         if not hasattr(self, "_anchor_cache"):
             self._anchor_cache = {}
         if not tuple(image_shape) in self._anchor_cache:
             # Generate Anchors
             a = utils.generate_pyramid_anchors(
-                self.config.RPN_ANCHOR_SCALES,
-                self.config.RPN_ANCHOR_RATIOS,
+                RPN_ANCHOR_SCALES,
+                RPN_ANCHOR_RATIOS,
                 backbone_shapes,
-                self.config.BACKBONE_STRIDES,
-                self.config.RPN_ANCHOR_STRIDE)
+                BACKBONE_STRIDES,
+                RPN_ANCHOR_STRIDE)
             # Keep a copy of the latest anchors in pixel coordinates because
             # it's used in inspect_model notebooks.
             # TODO: Remove this after the notebook are refactored to not use it
@@ -214,9 +195,10 @@ def compose_image_meta(image_id, original_image_shape, image_shape,
     return meta
 
 
-def mold_image(images, config):
+def mold_image(images):
     """Expects an RGB image (or array of images) and subtracts
     the mean pixel and converts it to float. Expects image
     colors in RGB order.
     """
-    return images.astype(np.float32) - config.MEAN_PIXEL
+    MEAN_PIXEL = np.array([123.7, 116.8, 103.9])
+    return images.astype(np.float32) - MEAN_PIXEL

@@ -17,7 +17,7 @@ from distutils.version import LooseVersion
 #  Dataset
 ############################################################
 
-def resize_image(image, min_dim=None, max_dim=None, min_scale=None, mode="square"):
+def resize_image(image, min_dim=800, max_dim=1024, min_scale=0, mode="square"):
     """Resizes an image keeping the aspect ratio unchanged.
 
     min_dim: if provided, resizes the image such that it's smaller
@@ -58,9 +58,6 @@ def resize_image(image, min_dim=None, max_dim=None, min_scale=None, mode="square
     padding = [(0, 0), (0, 0), (0, 0)]
     crop = None
 
-    if mode == "none":
-        return image, window, scale, padding, crop
-
     # Scale?
     if min_dim:
         # Scale up but not down
@@ -69,7 +66,7 @@ def resize_image(image, min_dim=None, max_dim=None, min_scale=None, mode="square
         scale = min_scale
 
     # Does it exceed max dim?
-    if max_dim and mode == "square":
+    if max_dim:
         image_max = max(h, w)
         if round(image_max * scale) > max_dim:
             scale = max_dim / image_max
@@ -79,48 +76,16 @@ def resize_image(image, min_dim=None, max_dim=None, min_scale=None, mode="square
         image = resize(image, (round(h * scale), round(w * scale)),
                        preserve_range=True)
 
-    # Need padding or cropping?
-    if mode == "square":
-        # Get new height and width
-        h, w = image.shape[:2]
-        top_pad = (max_dim - h) // 2
-        bottom_pad = max_dim - h - top_pad
-        left_pad = (max_dim - w) // 2
-        right_pad = max_dim - w - left_pad
-        padding = [(top_pad, bottom_pad), (left_pad, right_pad), (0, 0)]
-        image = np.pad(image, padding, mode='constant', constant_values=0)
-        window = (top_pad, left_pad, h + top_pad, w + left_pad)
-    elif mode == "pad64":
-        h, w = image.shape[:2]
-        # Both sides must be divisible by 64
-        assert min_dim % 64 == 0, "Minimum dimension must be a multiple of 64"
-        # Height
-        if h % 64 > 0:
-            max_h = h - (h % 64) + 64
-            top_pad = (max_h - h) // 2
-            bottom_pad = max_h - h - top_pad
-        else:
-            top_pad = bottom_pad = 0
-        # Width
-        if w % 64 > 0:
-            max_w = w - (w % 64) + 64
-            left_pad = (max_w - w) // 2
-            right_pad = max_w - w - left_pad
-        else:
-            left_pad = right_pad = 0
-        padding = [(top_pad, bottom_pad), (left_pad, right_pad), (0, 0)]
-        image = np.pad(image, padding, mode='constant', constant_values=0)
-        window = (top_pad, left_pad, h + top_pad, w + left_pad)
-    elif mode == "crop":
-        # Pick a random crop
-        h, w = image.shape[:2]
-        y = random.randint(0, (h - min_dim))
-        x = random.randint(0, (w - min_dim))
-        crop = (y, x, min_dim, min_dim)
-        image = image[y:y + min_dim, x:x + min_dim]
-        window = (0, 0, min_dim, min_dim)
-    else:
-        raise Exception("Mode {} not supported".format(mode))
+    # Get new height and width
+    h, w = image.shape[:2]
+    top_pad = (max_dim - h) // 2
+    bottom_pad = max_dim - h - top_pad
+    left_pad = (max_dim - w) // 2
+    right_pad = max_dim - w - left_pad
+    padding = [(top_pad, bottom_pad), (left_pad, right_pad), (0, 0)]
+    image = np.pad(image, padding, mode='constant', constant_values=0)
+    window = (top_pad, left_pad, h + top_pad, w + left_pad)
+
     return image.astype(image_dtype), window, scale, padding, crop
 
 

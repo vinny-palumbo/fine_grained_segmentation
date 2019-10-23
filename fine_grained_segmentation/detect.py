@@ -2,7 +2,6 @@ import sys
 import numpy as np
 import skimage
 
-from tools.config import Config
 from tools import model as modellib
 from tools import visualize
 
@@ -16,20 +15,6 @@ class_names = ['BG', 'shirt, blouse', 'top, t-shirt, sweatshirt', 'sweater',
                 'epaulette', 'sleeve', 'pocket', 'neckline', 'buckle', 'zipper', 
                 'applique', 'bead', 'bow', 'flower', 'fringe', 'ribbon', 'rivet', 
                 'ruffle', 'sequin', 'tassel']
-
-
-class InferenceConfig(Config):
-    # Set batch size to 1 since we'll be running inference on
-    # one image at a time. Batch size = GPU_COUNT * IMAGES_PER_GPU
-    
-    # Give the configuration a recognizable name
-    NAME = "fashion"
-
-    # Number of classes (including background)
-    NUM_CLASSES = 1 + 46  # fashion has 46 classes
-    
-    GPU_COUNT = 1
-    IMAGES_PER_GPU = 1
 
 
 def generate_image(images, molded_images, windows, results):
@@ -52,6 +37,7 @@ def generate_image(images, molded_images, windows, results):
 
 
 def detect(sess, model, filename):
+        BATCH_SIZE = 1
         
         # get image
         image = skimage.io.imread(filename)
@@ -60,7 +46,7 @@ def detect(sess, model, filename):
         # preprocessing
         molded_images, image_metas, windows = model.mold_inputs(images)
         anchors = model.get_anchors(molded_images[0].shape)
-        anchors = np.broadcast_to(anchors, (model.config.BATCH_SIZE,) + anchors.shape)
+        anchors = np.broadcast_to(anchors, (BATCH_SIZE,) + anchors.shape)
 
         results = \
             sess.run(None, {"input_image": molded_images.astype(np.float32),
@@ -88,11 +74,8 @@ if __name__ == '__main__':
     assert args.image, "Provide --image to detect fashion items"
     print("Image: ", args.image)
     
-    # create config
-    config = InferenceConfig()
-    
     # create model
-    model = modellib.MaskRCNN(mode="inference", model_dir="logs", config=config)
+    model = modellib.MaskRCNN(mode="inference", model_dir="logs")
     
     # run with ONNXRuntime
     import onnxruntime

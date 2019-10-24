@@ -17,6 +17,8 @@ from matplotlib import patches
 from matplotlib.patches import Polygon
 
 
+random.seed(42)
+
 def random_colors(N, bright=True):
     """
     Generate random colors.

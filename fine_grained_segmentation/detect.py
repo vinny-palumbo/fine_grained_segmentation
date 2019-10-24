@@ -2,7 +2,7 @@ import sys
 import numpy as np
 import skimage
 
-from tools import model as modellib
+from tools import model
 from tools import visualize
 
 # list of fashion class names
@@ -36,7 +36,7 @@ def generate_image(images, molded_images, windows, results):
     return results_final
 
 
-def detect(sess, model, filename):
+def detect(sess, filename):
         BATCH_SIZE = 1
         
         # get image
@@ -74,14 +74,11 @@ if __name__ == '__main__':
     assert args.image, "Provide --image to detect fashion items"
     print("Image: ", args.image)
     
-    # create model
-    model = modellib.MaskRCNN(mode="inference", model_dir="logs")
-    
     # run with ONNXRuntime
     import onnxruntime
     model_file_name = './mrcnn.onnx'
     sess = onnxruntime.InferenceSession(model_file_name)
-    detect(sess, model, args.image)
+    detect(sess, args.image)
     
     
     

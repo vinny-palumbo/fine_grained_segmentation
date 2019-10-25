@@ -5,8 +5,8 @@ import skimage
 import argparse
 import onnxruntime
 
-from tools import model
-from tools import visualize
+import fine_grained_segmentation.model as model
+import fine_grained_segmentation.visualize as visualize
 
 # list of fashion class names
 class_names = ['BG', 'shirt, blouse', 'top, t-shirt, sweatshirt', 'sweater', 

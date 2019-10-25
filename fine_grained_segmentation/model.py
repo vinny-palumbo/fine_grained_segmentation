@@ -10,7 +10,7 @@ Written by Waleed Abdulla
 import math
 import numpy as np
 
-from tools import utils
+import fine_grained_segmentation.utils as utils
 
 
 def mold_inputs(images):

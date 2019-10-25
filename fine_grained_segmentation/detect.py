@@ -1,6 +1,9 @@
+import os
 import sys
 import numpy as np
 import skimage
+import argparse
+import onnxruntime
 
 from tools import model
 from tools import visualize
@@ -59,8 +62,9 @@ def detect(sess, filename):
         
 if __name__ == '__main__':
     
-    import argparse
-
+    FILE_DIR = os.path.dirname(os.path.realpath(__file__))
+    print(FILE_DIR)
+    
     # Parse command line arguments
     parser = argparse.ArgumentParser(
         description='Detect and segment fashion items in images.')
@@ -75,8 +79,7 @@ if __name__ == '__main__':
     print("Image: ", args.image)
     
     # run with ONNXRuntime
-    import onnxruntime
-    model_file_name = './mrcnn.onnx'
+    model_file_name = os.path.join(FILE_DIR, 'mrcnn.onnx')
     sess = onnxruntime.InferenceSession(model_file_name)
     detect(sess, args.image)
     

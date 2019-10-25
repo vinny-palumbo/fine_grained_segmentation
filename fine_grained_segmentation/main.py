@@ -9,7 +9,7 @@ import fine_grained_segmentation.model as model
 import fine_grained_segmentation.visualize as visualize
 
 # list of fashion class names
-class_names = ['BG', 'shirt, blouse', 'top, t-shirt, sweatshirt', 'sweater', 
+CLASS_NAMES = ['BG', 'shirt, blouse', 'top, t-shirt, sweatshirt', 'sweater', 
                 'cardigan', 'jacket', 'vest', 'pants', 'shorts', 'skirt', 'coat', 
                 'dress', 'jumpsuit', 'cape', 'glasses', 'hat', 
                 'headband, head covering, hair accessory', 'tie', 'glove', 'watch', 
@@ -18,6 +18,8 @@ class_names = ['BG', 'shirt, blouse', 'top, t-shirt, sweatshirt', 'sweater',
                 'epaulette', 'sleeve', 'pocket', 'neckline', 'buckle', 'zipper', 
                 'applique', 'bead', 'bow', 'flower', 'fringe', 'ribbon', 'rivet', 
                 'ruffle', 'sequin', 'tassel']
+
+FILE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 def generate_image(images, molded_images, windows, results):
@@ -35,53 +37,29 @@ def generate_image(images, molded_images, windows, results):
         })
         r = results_final[i]
         visualize.display_instances(image, r['rois'], r['masks'], r['class_ids'],
-                                    class_names, r['scores'])
+                                    CLASS_NAMES, r['scores'])
     return results_final
 
 
-def detect(sess, filename):
-        BATCH_SIZE = 1
-        
-        # get image
-        image = skimage.io.imread(filename)
-        images = [image]
-        
-        # preprocessing
-        molded_images, image_metas, windows = model.mold_inputs(images)
-        anchors = model.get_anchors(molded_images[0].shape)
-        anchors = np.broadcast_to(anchors, (BATCH_SIZE,) + anchors.shape)
-
-        results = \
-            sess.run(None, {"input_image": molded_images.astype(np.float32),
-                            "input_anchors": anchors,
-                            "input_image_meta": image_metas.astype(np.float32)})
-
-        # postprocessing
-        results_final = generate_image(images, molded_images, windows, results)
-        
-        
-if __name__ == '__main__':
+def detect(filename):
+    BATCH_SIZE = 1
     
-    FILE_DIR = os.path.dirname(os.path.realpath(__file__))
-    print(FILE_DIR)
-    
-    # Parse command line arguments
-    parser = argparse.ArgumentParser(
-        description='Detect and segment fashion items in images.')
-    parser.add_argument('--image', required=True,
-                        metavar="path to image",
-                        help='Image to detect fashion items on')
-
-    args = parser.parse_args()
-
-    # Validate arguments
-    assert args.image, "Provide --image to detect fashion items"
-    print("Image: ", args.image)
-    
-    # run with ONNXRuntime
     model_file_name = os.path.join(FILE_DIR, 'mrcnn.onnx')
-    sess = onnxruntime.InferenceSession(model_file_name)
-    detect(sess, args.image)
+    session = onnxruntime.InferenceSession(model_file_name)
+
+    # get image
+    image = skimage.io.imread(filename)
+    images = [image]
     
-    
-    
+    # preprocessing
+    molded_images, image_metas, windows = model.mold_inputs(images)
+    anchors = model.get_anchors(molded_images[0].shape)
+    anchors = np.broadcast_to(anchors, (BATCH_SIZE,) + anchors.shape)
+
+    results = \
+        session.run(None, {"input_image": molded_images.astype(np.float32),
+                        "input_anchors": anchors,
+                        "input_image_meta": image_metas.astype(np.float32)})
+
+    # postprocessing
+    results_final = generate_image(images, molded_images, windows, results)

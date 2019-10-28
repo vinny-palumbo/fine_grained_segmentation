@@ -11,6 +11,8 @@ import random
 import numpy as np
 import skimage.transform
 from distutils.version import LooseVersion
+import requests
+import shutil
 
 
 ############################################################
@@ -209,3 +211,13 @@ def resize(image, output_shape, order=1, mode='constant', cval=0, clip=True,
             image, output_shape,
             order=order, mode=mode, cval=cval, clip=clip,
             preserve_range=preserve_range)
+
+
+def download_file(url):
+    print("* Downloading:", url)
+    local_filename = url.split('/')[-1]
+    with requests.get(url, stream=True) as r:
+        with open(local_filename, 'wb') as f:
+            shutil.copyfileobj(r.raw, f)
+
+    return local_filename

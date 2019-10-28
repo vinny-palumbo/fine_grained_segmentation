@@ -5,9 +5,10 @@ import skimage
 import argparse
 import onnxruntime
 
-import fine_grained_segmentation.model as model
-import fine_grained_segmentation.visualize as visualize
-import fine_grained_segmentation.utils as utils
+import fine_grained_segmentation
+from  fine_grained_segmentation import model
+from  fine_grained_segmentation import visualize
+from  fine_grained_segmentation import utils
 
 # list of fashion class names
 CLASS_NAMES = ['BG', 'shirt, blouse', 'top, t-shirt, sweatshirt', 'sweater', 
@@ -20,7 +21,7 @@ CLASS_NAMES = ['BG', 'shirt, blouse', 'top, t-shirt, sweatshirt', 'sweater',
                 'applique', 'bead', 'bow', 'flower', 'fringe', 'ribbon', 'rivet', 
                 'ruffle', 'sequin', 'tassel']
 
-FILE_DIR = os.path.dirname(os.path.realpath(__file__))
+LIB_DIR = fine_grained_segmentation.__path__[0]
 
 
 def generate_image(images, molded_images, windows, results):
@@ -48,11 +49,11 @@ def detect(filename):
     ONNX_WEIGHTS_URL = r"https://github.com/vinny-palumbo/fine_grained_segmentation/raw/master/fine_grained_segmentation/mrcnn.onnx"
     
     # get onnx weights
-    model_file_name = os.path.join(FILE_DIR, 'mrcnn.onnx')
+    model_file_name = os.path.join(LIB_DIR, 'mrcnn.onnx')
     
     # download onnx weights if it doesn't exist
     if not os.path.exists(model_file_name):
-        utils.download_file(ONNX_WEIGHTS_URL)
+        utils.download_file(ONNX_WEIGHTS_URL, model_file_name)
     
     # create onnx runtime session
     session = onnxruntime.InferenceSession(model_file_name)

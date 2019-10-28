@@ -213,11 +213,10 @@ def resize(image, output_shape, order=1, mode='constant', cval=0, clip=True,
             preserve_range=preserve_range)
 
 
-def download_file(url):
+def download_file(url, dst):
     print("* Downloading:", url)
-    local_filename = url.split('/')[-1]
+    print("  to:", dst)
     with requests.get(url, stream=True) as r:
-        with open(local_filename, 'wb') as f:
+        with open(dst, 'wb') as f:
             shutil.copyfileobj(r.raw, f)
-
-    return local_filename
+    return dst

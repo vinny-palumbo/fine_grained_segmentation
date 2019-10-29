@@ -17,10 +17,11 @@ Python 3.5, ONNX runtime, and other common packages listed in `requirements.txt`
    ```bash
    pip3 install -r requirements.txt
    ```
+3. Download pre-trained weights (mrcnn.onnx) from the [releases page](https://github.com/vinny-palumbo/fine_grained_segmentation/releases)
 
 ## Getting Started
 
-* [detect.py](fine_grained_segmentation/model/detect.py) detects and segments fashion items in an image
+* [main.py](fine_grained_segmentation/main.py) detects and segments fashion items in an image
 
 
 

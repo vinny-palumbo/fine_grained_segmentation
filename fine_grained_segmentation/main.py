@@ -46,7 +46,7 @@ def generate_image(images, molded_images, windows, results):
 def detect(filename):
     
     BATCH_SIZE = 1
-    ONNX_WEIGHTS_URL = r"https://github.com/vinny-palumbo/fine_grained_segmentation/raw/master/fine_grained_segmentation/mrcnn.onnx"
+    ONNX_WEIGHTS_URL = r"https://github.com/vinny-palumbo/fine_grained_segmentation/releases/download/v0.1-alpha/mrcnn.onnx"
     
     # get onnx weights
     model_file_name = os.path.join(LIB_DIR, 'mrcnn.onnx')

@@ -43,7 +43,7 @@ except Exception:
 
 setup(
     name='fine_grained_segmentation',
-    version='0.1.3',
+    version='0.1.4',
     url='https://github.com/vinny-palumbo/fine_grained_segmentation',
     author='Vincent Palumbo',
     author_email='vinnypalumbo.com@gmail.com',
@@ -54,4 +54,7 @@ setup(
     include_package_data=True,
     python_requires='>=3.4',
     long_description=open('README.md').read(),
+    entry_points = {
+        'console_scripts': ['fashion-segmentator=fine_grained_segmentation.command_line:main'],
+    }
 )

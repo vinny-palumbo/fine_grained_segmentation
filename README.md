@@ -19,10 +19,10 @@ Python 3.5, ONNX runtime, and other common packages listed in `requirements.txt`
    ```
 3. Download pre-trained weights (mrcnn.onnx) from the [releases page](https://github.com/vinny-palumbo/fine_grained_segmentation/releases)
 
-## Getting Started
+## Usage
 
-* [main.py](fine_grained_segmentation/main.py) detects and segments fashion items in an image
-
-
-
-
+Here is how to use the library from the command line:
+```bash
+fashion-segmentator --image=<path/to/image/file>
+```
+This will generate a ```result.png``` file in the current directory

@@ -11,6 +11,7 @@ import random
 import colorsys
 
 import numpy as np
+import skimage
 from skimage.measure import find_contours
 import matplotlib.pyplot as plt
 from matplotlib import patches
@@ -43,6 +44,36 @@ def apply_mask(image, mask, color, alpha=0.5):
     return image
     
 
+def remove_white_borders(image):
+    ''' Remove white borders around an image, and only keep the cropped center '''
+    
+    # sum pixel values over all 3 color channels
+    image_sum_channels = np.sum(image, axis=-1, keepdims=True)
+    
+    # initialize filter to extract non-white regions
+    nonwhite_filter = np.ones(image_sum_channels.shape)
+    
+    # if image pixel is white [255, 255, 255], set filter value to nan
+    nonwhite_filter[image_sum_channels == 255*3] = 0
+    
+    # duplicate filter on each channels of the image
+    nonwhite_filter = np.repeat(nonwhite_filter, 3, axis=-1)
+    
+    # apply filter and only keep non-white regions
+    image = image[nonwhite_filter == 1]
+    
+    # get non-white region height by counting the number of non-white pixels at the center of the image across its height
+    nonwhite_height = np.count_nonzero(nonwhite_filter[:,nonwhite_filter.shape[1]//2,0])
+    
+    # get non-white region width by counting the number of non-white pixels at the center of the image across its width
+    nonwhite_width = np.count_nonzero(nonwhite_filter[nonwhite_filter.shape[0]//2,:,0])
+    
+    # reconstruct filtered image with the correct dimensions
+    image = image.reshape(nonwhite_height, nonwhite_width, -1)
+    
+    return image
+    
+    
 def display_instances(image, boxes, masks, class_ids, class_names,
                       scores=None, title="",
                       figsize=(16, 16), ax=None,
@@ -60,6 +91,8 @@ def display_instances(image, boxes, masks, class_ids, class_names,
     colors: (optional) An array or colors to use with each object
     captions: (optional) A list of strings to use as captions for each object
     """
+    OUTPUT_FILENAME = "result.png"
+    
     # Number of instances
     N = boxes.shape[0]
     if not N:
@@ -107,7 +140,7 @@ def display_instances(image, boxes, masks, class_ids, class_names,
         else:
             caption = captions[i]
         ax.text(x1, y1 + 8, caption,
-                color='w', size=11, backgroundcolor="none")
+                color='lime', size=11, backgroundcolor="none")
 
         # Mask
         mask = masks[:, :, i]
@@ -127,4 +160,10 @@ def display_instances(image, boxes, masks, class_ids, class_names,
             ax.add_patch(p)
     ax.imshow(masked_image.astype(np.uint8))
     if auto_show:
-        plt.savefig("result")
+        plt.savefig(OUTPUT_FILENAME)
+    
+    # crop white borders in the output image
+    image = skimage.io.imread(OUTPUT_FILENAME)[:,:,:3]
+    image_cropped = remove_white_borders(image)
+    skimage.io.imsave(OUTPUT_FILENAME, image_cropped)
+        

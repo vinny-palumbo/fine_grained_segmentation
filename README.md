@@ -1,6 +1,10 @@
-# Fine-Grained Segmentation
+# fine-grained-segmentation library
 
-This is a project for fine-grained segmentation on clothing items in images, implemented in Python 3 and ONNX. A deep learning model generates bounding boxes and segmentation masks for each instance of an object in the image. It's based on [Matterport Mask R-CNN](https://github.com/matterport/Mask_RCNN)
+Python library for segmenting clothing items in images, implemented in Python 3 and ONNX. A deep learning model generates bounding boxes and segmentation masks for each instance of an object in the image. It's based on [Matterport Mask R-CNN](https://github.com/matterport/Mask_RCNN)
+
+The library is also available on the [Python Package Index](https://pypi.org/project/fine-grained-segmentation/)
+
+A demo web app is up at https://fine-grained-segmentation.vinnypalumbo.com
 
 ## Requirements
 

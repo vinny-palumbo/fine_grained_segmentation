@@ -220,3 +220,30 @@ def download_file(url, dst):
         with open(dst, 'wb') as f:
             shutil.copyfileobj(r.raw, f)
     return dst
+
+
+def modify_white_pixels(image):
+    ''' Modify the white pixels in the input image to an off-white color, 
+    so that they are not detected as purely white pixels when removing 
+    white borders around the output image
+    '''
+    # sum pixel values over all 3 color channels
+    image_sum_channels = np.sum(image, axis=-1, keepdims=True)
+    
+    # initialize filter to flag white pixels
+    white_pixel_filter = np.zeros(image_sum_channels.shape)
+    
+    # if image pixel is white [255, 255, 255], set filter value to 1
+    white_pixel_filter[image_sum_channels == 255*3] = 1
+    
+    # duplicate filter on each channels of the image
+    white_pixel_filter = np.repeat(white_pixel_filter, 3, axis=-1)
+    
+    # convert white pixels to off-white color
+    image[white_pixel_filter == 1] = 254
+    
+    return image
+    
+    
+    
+    

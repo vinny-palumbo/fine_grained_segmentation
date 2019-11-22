@@ -164,6 +164,6 @@ def display_instances(image, boxes, masks, class_ids, class_names,
     
     # crop white borders in the output image
     image = skimage.io.imread(OUTPUT_FILENAME)[:,:,:3]
-    image_cropped = remove_white_borders(image)
-    skimage.io.imsave(OUTPUT_FILENAME, image_cropped)
+    image = remove_white_borders(image)
+    skimage.io.imsave(OUTPUT_FILENAME, image)
         

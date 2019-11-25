@@ -43,7 +43,7 @@ except Exception:
 
 setup(
     name='fine_grained_segmentation',
-    version='0.1.8',
+    version='0.1.9',
     url='https://github.com/vinny-palumbo/fine_grained_segmentation',
     author='Vincent Palumbo',
     author_email='vinnypalumbo.com@gmail.com',

@@ -79,3 +79,7 @@ def detect(filename):
 
     # postprocessing
     results_final = generate_image(images, molded_images, windows, results)
+
+
+if __name__ == "__main__":
+    detect('../sample_test_upper-left.jpg')

@@ -1,0 +1,4 @@
+# only need libraries for testing the app
+pytest
+numpy
+imageio

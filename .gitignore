@@ -57,6 +57,9 @@ pip-delete-this-directory.txt
 venv/
 ENV/
 
+# onnx models
+*.onnx
+
 # images
 *.png
 *.jpeg

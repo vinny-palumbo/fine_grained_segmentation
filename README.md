@@ -21,8 +21,7 @@ Python 3.5, ONNX runtime, and other common packages listed in `requirements.txt`
    ```bash
    pip3 install -r requirements.txt
    ```
-3. Download pre-trained weights (mrcnn.onnx) from the [releases page](https://github.com/vinny-palumbo/fine_grained_segmentation/releases)
-
+   
 ## Usage
 
 Here is how to use the library from the command line:

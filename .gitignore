@@ -64,3 +64,4 @@ ENV/
 *.png
 *.jpeg
 *.jpg
+!test_image.jpg

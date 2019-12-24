@@ -27,12 +27,12 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            pip install -r requirements.txt
+            sudo pip install -r requirements.txt
             
       - run:
           name: Install Testing Dependencies
           command: |
-            pip install -r requirements_tests.txt
+            sudo pip install -r requirements_tests.txt
 
       - save_cache:
           paths:

@@ -2,3 +2,4 @@
 pytest
 numpy
 imageio
+requests

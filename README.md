@@ -1,4 +1,4 @@
-# fine-grained-segmentation library
+# fine-grained-segmentation library [![CircleCI](https://circleci.com/gh/vinny-palumbo/fine_grained_segmentation.svg?style=svg)](https://circleci.com/gh/vinny-palumbo/fine_grained_segmentation)
 
 Python library for segmenting clothing items in images, implemented in Python 3 and ONNX. A deep learning model generates bounding boxes and segmentation masks for each instance of an object in the image. It's based on [Matterport Mask R-CNN](https://github.com/matterport/Mask_RCNN)
 

@@ -1,4 +1,5 @@
 # only need libraries for testing the app
+-e .
 pytest
 numpy
 imageio
